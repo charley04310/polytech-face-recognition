@@ -21,4 +21,4 @@ Start the App
 python3 main.py
 ```
 
-![alt text](https://github.com/charley04310/polytech-face-recognition/img/app.png)
+![alt text](https://github.com/charley04310/polytech-face-recognition/blob/main/img/app.png)
