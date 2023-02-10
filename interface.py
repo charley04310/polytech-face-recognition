@@ -10,7 +10,6 @@ class Interface:
     def __init__(self):
 
         self.isAuth = False
-
         self.recognition = WebCamMethods()
 
         self.master = customtkinter.CTk() 
@@ -19,35 +18,14 @@ class Interface:
 
         self.webcam = cv2.VideoCapture(0)
 
-        self.leftSideMenu = customtkinter.CTkFrame(master=self.master)
-        self.leftSideMenu.configure(width=200)
-        self.leftSideMenu.pack(side="left", fill="y", expand=False, pady=0)
-
-        self.home_button = customtkinter.CTkButton(master=self.leftSideMenu, text="Accueil", fg_color="blue", command=lambda:self.isActive(self.home_button, self.home_page))
-        self.home_button.pack(pady=10, padx=50)
-
-        self.home_button_is_active = customtkinter.CTkLabel(master=self.leftSideMenu, width=2, height=40, fg_color="transparent", text=" ")
-        self.home_button_is_active.place(x=0, y=0)
-
-        self.register_button = customtkinter.CTkButton(master=self.leftSideMenu, text="S'enregister",fg_color="blue", command=lambda:self.isActive(self.register_button_is_active, self.register_page))
-        self.register_button.pack(pady=10, padx=50)
-
-        self.register_button_is_active = customtkinter.CTkLabel(master=self.leftSideMenu, width=2, height=40, fg_color="transparent", text=" ")
-        self.register_button_is_active.place(x=0, y=50)
-
-        self.start_scan_button = customtkinter.CTkButton(master=self.leftSideMenu, text="Commencer un scan",fg_color="blue", command=lambda:self.isActive(self.start_scan_button_is_active, self.scan_page))
-        self.start_scan_button.pack(pady=10, padx=50)
-
-        self.start_scan_button_is_active = customtkinter.CTkLabel(master=self.leftSideMenu, width=2, height=40, fg_color="transparent", text=" ")
-        self.start_scan_button_is_active.place(x=0, y=100)
+        self.leftSideMenu()
         
         self.main_frame = customtkinter.CTkFrame(master=self.master, fg_color="blue")
         self.main_frame.pack(side="right", fill="both", expand=True, pady=0)
 
-        self.isActive(self.home_button_is_active, self.home_page)
+        self.router_recognition(self.home_button_is_active, self.home_page)
 
         self.master.mainloop()
-
 
     def update_frame(self, label):
         _, frame = self.webcam.read()
@@ -65,8 +43,29 @@ class Interface:
 
         label.after(5, lambda: self.update_frame(label))
 
-    def home_page(self): 
+    def leftSideMenu(self):
+            self.leftSideMenu = customtkinter.CTkFrame(master=self.master)
+            self.leftSideMenu.configure(width=200)
+            self.leftSideMenu.pack(side="left", fill="y", expand=False, pady=0)
 
+            self.home_button = customtkinter.CTkButton(master=self.leftSideMenu, text="Accueil", fg_color="blue", command=lambda:self.router_recognition(self.home_button, self.home_page))
+            self.home_button.pack(pady=10, padx=50)
+
+            self.home_button_is_active = customtkinter.CTkLabel(master=self.leftSideMenu, width=2, height=40, fg_color="transparent", text=" ")
+            self.home_button_is_active.place(x=0, y=0)
+            self.register_button = customtkinter.CTkButton(master=self.leftSideMenu, text="S'enregister",fg_color="blue", command=lambda:self.router_recognition(self.register_button_is_active, self.register_page))
+            self.register_button.pack(pady=10, padx=50)
+
+            self.register_button_is_active = customtkinter.CTkLabel(master=self.leftSideMenu, width=2, height=40, fg_color="transparent", text=" ")
+            self.register_button_is_active.place(x=0, y=50)
+
+            self.start_scan_button = customtkinter.CTkButton(master=self.leftSideMenu, text="Commencer un scan",fg_color="blue", command=lambda:self.router_recognition(self.start_scan_button_is_active, self.scan_page))
+            self.start_scan_button.pack(pady=10, padx=50)
+
+            self.start_scan_button_is_active = customtkinter.CTkLabel(master=self.leftSideMenu, width=2, height=40, fg_color="transparent", text=" ")
+            self.start_scan_button_is_active.place(x=0, y=100)
+
+    def home_page(self): 
         self.home_frame = customtkinter.CTkFrame(master=self.main_frame)
         self.home_frame.pack(pady=10, padx=10)
 
@@ -79,12 +78,16 @@ class Interface:
         self.label_image.pack(pady=10, padx=10)
         self.label_image.configure(image=self.image_introduction)
 
-        self.enter = customtkinter.CTkEntry(master=self.home_frame, placeholder_text="code d'identification")
-        self.enter.pack(pady=10, padx=10)
+        if self.isAuth == True:
+            self.button = customtkinter.CTkButton(master=self.home_frame, text="Se déconnecter", command=self.log_out())
+            self.button.pack(pady=10, padx=10)
 
-        self.button = customtkinter.CTkButton(master=self.home_frame, text="Votre code d'identification", command=lambda:isCodeValidate(self.enter))
-        self.button.pack(pady=10, padx=10)
+        else:
+            self.enter = customtkinter.CTkEntry(master=self.home_frame, placeholder_text="code d'identification")
+            self.enter.pack(pady=10, padx=10)
 
+            self.button = customtkinter.CTkButton(master=self.home_frame, text="Votre code d'identification", command=lambda:self.isCodeValidate(self.enter))
+            self.button.pack(pady=10, padx=10)
 
     def register_page(self): 
 
@@ -115,9 +118,6 @@ class Interface:
         self.labelCamera = customtkinter.CTkLabel(master=self.home_frame, text="")
         self.labelCamera.pack(pady=10, padx=10)
 
-        self.enter = customtkinter.CTkEntry(master=self.home_frame, placeholder_text="Enter your username")
-        self.enter.pack(pady=10, padx=10)
-
         self.recognition.run_recognition(self.webcam, self.labelCamera)
     
     def hideIndicator(self):
@@ -129,9 +129,20 @@ class Interface:
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
-    def isActive(self, button, page):
-
+    def router_recognition(self, button, page):
         self.hideIndicator()
         button.configure(fg_color="blue")
         self.refresh_frame()
         page()
+    
+    def isCodeValidate(self, enter):
+        if enter.get() == "1234":
+            self.isAuth = True
+            print("isAuth == true ")
+
+        else:
+            print("isAuth == flase")
+    
+    def log_out(self):
+        self.isAuth = False
+        self.router_recognition(self.home_button_is_active, self.home_page)

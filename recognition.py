@@ -75,8 +75,6 @@ class WebCamMethods:
         label.configure(image=frame)
         label.after(10, lambda: self.run_recognition(webcam, label))
 
-
-
     def takePicture(self, webcam, labelCamera, enter, buttonPicture, home_frame):
         name = enter.get()
         path = 'faces/'+name+'.jpg'
